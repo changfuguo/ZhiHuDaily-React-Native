@@ -16,6 +16,7 @@ var {
 
 var SwitchAndroid = require('SwitchAndroid');
 var ToolbarAndroid = require('ToolbarAndroid');
+var statusBarSize = Platform.OS == 'ios' ? 10 : 0;
 
 var API_STROY_EXTRA = 'http://news-at.zhihu.com/api/4/story-extra/';
 
@@ -32,16 +33,16 @@ var DetailToolbar = React.createClass({
   fetchStroyExtra: function() {
     fetch(API_STROY_EXTRA + this.props.story.id)
       .then((response) => response.json())
-      .catch((error) => {
-        this.setState({
-          isLoading: false,
-          extra: null,
-        });
-      })
       .then((responseData) => {
         this.setState({
           isLoading: false,
           extra: responseData,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          isLoading: false,
+          extra: null,
         });
       })
       .done();
@@ -107,7 +108,7 @@ var DetailToolbar = React.createClass({
                 source={require('image!ic_comment_white')}
                 resizeMode='contain' />
               <Text style={styles.count}>
-                {this.state.isLoading ? '...' : this.state.extra.comments}
+                {(this.state.isLoading || !this.state.extra) ? '...' : this.state.extra.comments}
               </Text>
             </View>
           </TouchableElement>
@@ -118,7 +119,7 @@ var DetailToolbar = React.createClass({
                 source={require('image!ic_praise_white')}
                 resizeMode='contain' />
               <Text style={styles.count}>
-                {this.state.isLoading ? '...' : this.state.extra.popularity}
+                {(this.state.isLoading || !this.state.extra) ? '...' : this.state.extra.popularity}
               </Text>
             </View>
           </TouchableElement>
@@ -139,6 +140,7 @@ var DetailToolbar = React.createClass({
 var styles = StyleSheet.create({
   actionsContainer: {
     height: 56,
+    paddingTop: statusBarSize,
     flexDirection: 'row',
     alignItems: 'center',
   },
